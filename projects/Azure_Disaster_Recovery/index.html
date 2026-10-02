@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Azure Disaster Recovery | Olivier Deschamps</title>
+    <link rel="stylesheet" href="../../assets/vendors/themify-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="../../assets/css/meyawo.css">
+</head>
+
+<body>
+
+    <!-- Navbar: "affix" class is added by hand so it stays solid (no hero image on this page),
+         and data-spy is removed because there's nothing to scroll-detect. -->
+    <nav class="custom-navbar affix">
+        <div class="container">
+            <a class="logo" href="../../index.html">Olivier Deschamps</a>
+            <ul class="nav">
+                <li class="item"><a class="link" href="../../index.html">Home</a></li>
+                <li class="item"><a class="link" href="../../index.html#about">About</a></li>
+                <li class="item"><a class="link" href="../../index.html#portfolio">Projects</a></li>
+                <li class="item"><a class="link" href="../../index.html#contact">Contact</a></li>
+            </ul>
+            <a href="javascript:void(0)" id="nav-toggle" class="hamburger hamburger--elastic">
+                <div class="hamburger-box">
+                    <div class="hamburger-inner"></div>
+                </div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Project content: arrange this however you like -->
+    <section class="section" style="padding-top: 140px;">
+        <div class="container">
+            <a href="../../index.html#portfolio">&larr; Back to projects</a>
+
+            <h1 class="mt-4">Azure Disaster Recovery</h1>
+            <p class="text-muted">Create a Azure Disaster Recovery Demo with Backup and including RPO and RTO</p>
+
+
+            <h3>Introduction</h3>
+            <p>I wanted to explore the disaster recovery side of cybersecurity, what kind of things were expected, and what kind of technicalities did I have to learn.</p>
+
+
+
+            <h3>Inital Blind Goals</h3>
+            <p>Explore Disaster Recovery in Azure</p>
+            <p>Do Policy A, Do Policy B, Create a VM in Azure, Do the RPO matrix, Do the RTO, Do the backups, Document the process</p>
+            <p><i>Goals are usually vague because I don't know much about the subject or I'm trying to learn about something. So having a precise goal makes little sense because when I set up the goals, this was what I was imagining, what was needed from me in this kind of project. And then after that, the more I learned about the topic and the more I realized that there is more to it and more stuff to add in, but these were the initial goals.</i></p>
+
+
+
+            <h3>Tools</h3>
+            <p> Azure B2S VMs / Nginx for the app / Azure Backup / Azure Site Recovery for cross-vision.</p>
+
+
+
+            <h3>Steps</h3>
+
+            <!-- Provisioning -->
+            <h5>Provisioning</h5>
+            <p>I have a budget of $100 for the VM and all, so I had to be strategic. The first thing to do was put a budget in place.</p>
+            <img src="../Azure_Disaster_Recovery/assets/BudgetPic.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+            <p>Then I had to create the VM and I called it FinVM from like finance, I wanted to create like a fake company with like fake documentation and stuff for the RTO and RPO as well. So I needed a name and some departments, so I was, I didn't know how many VM I was going to create, I ended up doing just one, but I think one, I ended up calling it the FinVN for finance. Then I SSH inside the VM. 
+            So I chose the B2S series because it's a versatile and cheap alternative, like the D series is obviously better, but for a project of this size with a small budget, it was way easier to spin off and have it running early and it gives me more flexibility. I would have probably chose the B1S series, but it wasn't available, so...</p>
+
+            <p alt="SSH Issues">So I had like one small issue that was a little bit notable is the SSH key too exposed on Windows that I never had this issue before. So this was interesting when trying to connect to the VM. It was a quick fix with by changing the permissions but I still think it was notable.</p>
+
+            <!-- App Section -->
+            <h5>The App</h5>
+            <p>After that, I created the app. So I just installed nginx. Created a small demo app. Nothing super complicated, but it needed to be done to simulate the app a company would use.</p>
+            <img src="../Azure_Disaster_Recovery/assets/DemoApp.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+
+            <p>Allowed HTTP to see it on the internet (allowed for 10mn for testing)</p>
+            
+            <img src="../Azure_Disaster_Recovery/assets/AllowingHTTP.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+            <img src="../Azure_Disaster_Recovery/assets/ReleaseOnInternet.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+            
+
+            <!-- Backup of the VM -->
+            <h5>Backup of VM</h5>
+            <p>Then I started the backup process, so this is where everything a little bit more disaster recovery related starts. So I had to create the backup and then replicate them on another server, I mean on another region would be more precise.</p>
+            <img src="../Azure_Disaster_Recovery/assets/BackupOfVM2.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+            <img src="../Azure_Disaster_Recovery/assets/BackupsOfVM1.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+
+
+            <!-- Backup Policies -->
+            <h5>Backup Policies</h5>
+
+            <p>So then I created the backup policy. So these are supposed to be in relation with the RTO and RPO. And that's basically, I had to fix the, I kind of fixed some random numbers really, but I just did retention for 30 days. And yeah, if for the more critical stuff, I just increased the retention.</p>
+            <img src="../Azure_Disaster_Recovery/assets/StandardDailyPolicy.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+
+            <img src="../Azure_Disaster_Recovery/assets/Critical-EnhancePolicy.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+
+            <!-- Sire Recovery Section -->
+            <h5>Site Recovery</h5>
+
+            <p>So, I had multiple trouble when it came for the replication. So, the first one was there is an automatization account that is created automatically when it comes to replication, and it wouldn't let me create one because of the licensing. 
+            I have Azure student. So, I had to find a workaround with it, which was just create a Microsoft normal automatization account, not an automatic one created with the replication. Either way, once this was done, the replication still wouldn't go off because of the region. 
+            Again, the licensing only has access to certain regions, and I was initially wanting to go to Central because the Microsoft documentation was saying that the best between US East 2, the best replication you can do in terms of latency, I guess, would be with US Central, and I couldn't do that, so I ended up doing what I could do, which was South Central. 
+            Honestly, for the purpose of the demo, it doesn't change much. It's just that I had to find a workaround for every little problem, I guess.</p>
+
+            <img src="../Azure_Disaster_Recovery/assets/What I wanted to do.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+            <img src="../Azure_Disaster_Recovery/assets/ActualReplication.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+
+
+
+            <p>Multiple things worth noting here. The first one was the GPU VM auto-assignment. It was more of a cost risk than a technical risk, but on small budgets it can make a difference, so it was something to adjust.</p>
+            <img src="../Azure_Disaster_Recovery/assets/RecoveryServicesIaaSDR_Z.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+
+            <img src="../Azure_Disaster_Recovery/assets/replicationSouthCentral.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+
+            <!-- Recovery Plan Part -->
+            <h5>Recovery Plan</h5>
+            <p></p>
+            
+            <img src="../Azure_Disaster_Recovery/assets/SiteRecoveryDR.png" class="img-fluid rounded my-4" alt="Project One screenshot">    
+
+
+
+
+
+            <!-- Fail of the First Failover test because of Cpus Issues  -->            
+            <h5>First Failover Test</h5>
+            <img src="../Azure_Disaster_Recovery/assets/ChangeToCanadaCentral.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+            <p>I will spare the detail of me redoing everything, but the failover test couldn't be done without it, so I had to redo the whole setup to Canada Central So, some names might appear a little bit inconsistent Because it was originally in South Central</p>
+    
+
+
+            
+
+
+            <h6>Quotas</h6>
+            <img src="../Azure_Disaster_Recovery/assets/AdjustingtheQuotas.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+            <p>So after I had this issue and I had to re-put the whole replication in Canada Central, I adjusted the quota for the B2 VM to 4 CPUs and then it went up and running and then I could start the failover test.</p>
+
+
+            <!-- Second Fail Over Test -->
+            <h5>Second Failover Test</h5>
+
+            <img src="../Azure_Disaster_Recovery/assets/FailOverTestFinal.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+            <p>so the real-time results for the test of the test failover were closer to 3 minute because there was a lot of prerequisite for the checks for the test failover but for the creation of the virtual machine and and the actual start it was a much shorter</p>
+
+            <i>The Vm Created from the Fail Over Test</i>
+            <img src="../Azure_Disaster_Recovery/assets/FailOverTest2.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+            <img src="../Azure_Disaster_Recovery/assets/FailOverTest3.png" class="img-fluid rounded my-4" alt="Project One screenshot">
+
+            <h3>Result</h3>
+            <p>Explain what came out of it, with links to the code or demo if you have them.</p>
+
+
+
+
+            <h3>Takeaways</h3>
+            <p>This was the first project I documented for my portfolio, I mean, with the portfolio in mind. And so there was more to it than just the disaster recovery. And I'm sure I'm gonna improve on the portfolio side. So I think it turned out quite decently. I had a few challenges with the OS of Linux and region licensing. </p>
+            <p>I think maybe I took too many screenshots so this is something to keep in mind for the future projects I know that it's better for visually showing what I did but maybe it was a little bit too much I'm not sure maybe keeping a better balance between explaining and screenshots but maybe there is... maybe it's a good amount, I'm not sure yet</p>
+            
+            <p>also having to set up the website correctly was also a challenge and having to work on the technicals I think as a first project it was pretty good I mean as a first project had to put on the website it was pretty good I will definitely continue to do so</p>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div class="container">
+        <footer class="footer">
+            <p class="mb-0">Copyright
+                <script>document.write(new Date().getFullYear())</script> &copy; YOUR NAME
+                &middot; Template by <a href="http://www.devcrud.com">DevCRUD</a>
+            </p>
+            <div class="social-links text-right m-auto ml-sm-auto">
+                <a href="https://github.com/YOUR-USERNAME" class="link"><i class="ti-github"></i></a>
+                <a href="https://www.linkedin.com/in/YOUR-PROFILE" class="link"><i class="ti-linkedin"></i></a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../../assets/vendors/jquery/jquery-3.4.1.js"></script>
+    <script src="../../assets/vendors/bootstrap/bootstrap.bundle.js"></script>
+    <script src="../../assets/js/meyawo.js"></script>
+
+</body>
+
+</html>
